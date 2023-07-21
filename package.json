@@ -4,7 +4,7 @@
     "description": "OpenAPI specification for TestAPI",
     "license": "MIT",
     "scripts": {
-        "mock": "prism mock spec/api.yaml -h 0.0.0.0",
+        "mock": "prism mock spec/api.yaml -h 0.0.0.0 -d",
         "build": "docker build . -t testapi-spec",
         "start": "docker run -p 4010:4010 testapi-spec",
         "dstart": "docker run -d -p 4010:4010 testapi-spec"
