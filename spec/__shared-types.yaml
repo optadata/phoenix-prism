@@ -1,0 +1,75 @@
+Shared_PublicMandantId:
+  type: string
+  format: uuid
+  description: |
+    Die (halb)-oeffentliche Id eines Mandanten, die im KeyCloak zur Mandanten-Identifikation hinterlegt ist (OAuth2).
+    Ueber diese Id wird der Mandant nach Authentifizierung durch KeyCloak ermittelt und aus der Datenbank geladen.
+
+Shared_KlientId:
+  type: string
+  format: uuid
+
+Shared_MitarbeiterId:
+  type: string
+  format: uuid
+
+Shared_Handzeichen:
+  type: string
+  maxLength: 5
+  description: Eindeutiges Handzeichen des Mitarbeiters
+
+Shared_Person:
+  type: object
+  required:
+    - name
+    - adresse
+    - kontaktinformation
+  properties:
+    anrede:
+      $ref: "./__shared-enums.yaml#/Shared_AnredeEnum"
+    titel:
+      $ref: "./__shared-enums.yaml#/Shared_TitelEnum"
+    name:
+      type: string
+      maxLength: 255
+    vorname:
+      type: string
+      maxLength: 255
+    avatar:
+      type: string
+      maxLength: 1000
+      description: Eine URL zu einem Bild.
+    adresse:
+      $ref: "#/Shared_Adresse"
+    kontaktinformation:
+      $ref: "#/Shared_Kontaktinformation"
+
+
+Shared_Adresse:
+  type: object
+  properties:
+    strasse:
+      type: string
+      maxLength: 255
+    hausnummer:
+      type: string
+      maxLength: 255
+    zipCode:
+      type: string
+      maxLength: 255
+    ort:
+      type: string
+      maxLength: 255
+
+Shared_Kontaktinformation:
+  type: object
+  properties:
+    telefon:
+      type: string
+      maxLength: 255
+    mobil:
+      type: string
+      maxLength: 255
+    email:
+      type: string
+      maxLength: 128

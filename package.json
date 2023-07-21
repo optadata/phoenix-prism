@@ -1,0 +1,15 @@
+{
+    "name": "testapi-spec",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for TestAPI",
+    "license": "MIT",
+    "scripts": {
+        "mock": "prism mock spec/api.yaml -h 0.0.0.0"
+    },
+    "dependencies": {
+        "@openapitools/openapi-generator-cli": "^1.0.15-4.3.1",
+        "@stoplight/prism-cli": "^4.0.0",
+        "@stoplight/spectral": "^5.5.0",
+        "swagger-cli": "^4.0.4"
+    }
+}

@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: Phoenix REST-API fuer Altenpflege-Messe 2023
+  description: Phoenix REST-API fuer Altenpflege-Messe 2023
+  version: ${mandant.version}
+
+servers:
+  - url: 'http://localhost:8080'
+
+tags:
+  - name: Mandant
+
+
+paths:
+  /api/fe/mandant:
+    get:
+      operationId: "getMandantenListe"
+      tags:
+        - Mandant
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MandantPageable"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    put:
+      operationId: "putCreateMandant"
+      tags:
+        - Mandant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Mandant"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mandant"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+
+  /api/fe/mandant/{publicMandantId}/status:freischalten:
+    put:
+      operationId: "putMandantFreischalten"
+      tags:
+        - Mandant
+      parameters:
+        - name: publicMandantId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PublicMandantId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mandant"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+
+  /api/fe/mandant/{publicMandantId}/status:sperren:
+    put:
+      operationId: "putMandantSperren"
+      tags:
+        - Mandant
+      parameters:
+        - name: publicMandantId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PublicMandantId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mandant"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+
+components:
+  schemas:
+
+    PublicMandantId:
+      $ref: "./__shared-types.yaml#/Shared_PublicMandantId"
+
+    Mandant:
+      type: object
+      description: |
+        Der Mandant ist gleichzusetzen mit dem jeweiligen Pflegedienstleister. Der Datensatz ist eindeutig
+        und wir aus dem Optadata-Backoffice-System angelegt. Hierzu werden Kundennummer und die im KeyCloak
+        hinterlegte 'PublicMandantId' verwendet.
+      required:
+        - publicMandantId
+        - kundenNummer
+      properties:
+        publicMandantId:
+          $ref: "#/components/schemas/PublicMandantId"
+        kundenNummer:
+          type: string
+          readOnly: true
+          description: |
+            Die Kundennummer wird in den buchhalterischen Systemen des Optadata-Backoffice generiert und hier als
+            zusaetzlicher Identifikator verwendet.
+          minLength: 4
+          maxLength: 8
+          pattern: "[0-9]+"
+        aktiv:
+          type: boolean
+          readOnly: true
+          default: false
+          description: |
+            Gibt an, ob der Mandant mit dem System arbeiten kann oder nicht. Ggf. kann hier auf zentraler Ebene
+            eine Art "Notfallschalter" etabliert werden, um einzelne Mandanten aufgrund von Unregelmaessigkeiten
+            von der Nutzung der Phoenix-Anwendung temporär auszuschliessen.
+            Kann auch verwendet werden, um einen Zugriff nach einem Zieldatum zu deaktivieren (bspw. Kündigung).
+
+    MandantPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Mandant"
+
+    FailureResponse:
+      $ref: "./__shared-failure-types.yaml#/FailureResponse"

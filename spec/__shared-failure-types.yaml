@@ -1,0 +1,79 @@
+FailureResponse:
+  type: object
+  description: |
+    Gemeinsam von den jeweiligen Specs genutztes Fehler-Objekt. Im Backend wird nur das Fehler-Objekt aus dem
+    Mandant-Modul verwendet. Da letztendlich ein untypisiertes (duck-typing) JSON ueber die Leitung geht, ist
+    es dem Frontend prinzipiell egal, aus welchem Modul es letztendlich kam. Im Frontend sollten jedoch trotzdem
+    die Fehler-Objekte aus dem zum Endpunkt gehoerenden Modul genutzt werden.
+    
+    Beim strukturellen Anpassungen dieser gemeinsam genutzten Fehler-Objekte muessen natuerlich saemtliche 
+    Endpunkte im Frontend und Backend aktualisiert werden. Ansonsten kann es zu Uebertragungsfehlern kommen.
+  required:
+    - uid
+    - timestamp
+    - failureType
+    - details
+  properties:
+    uid:
+      type: string
+      format: uuid
+      description: |
+        Mit Hilfe dieser UUID kann der Fehler in den Backend-Logs nachvollzogen werden (haupts. Systemfehler).
+        Es werden jedoch nicht alle aufgetretenen Fehler im Backend gelogged.
+    timestamp:
+      type: string
+      format: date-time
+      description: |
+        Zeitpunkt, zu welchem der Fehler im Backend aufgetreten ist.
+    failureType:
+      $ref: "#/FailureResponseType"
+    details:
+      type: array
+      description: |
+        Zusaetzliche Details zum Fehler. - (W.I.P.)
+      minItems: 1
+      maxItems: 20
+      items:
+        $ref: "#/FailureResponseDetail"
+
+FailureResponseDetail:
+  type: object
+  description: |
+    (W.I.P.)
+  required:
+    - context
+  properties:
+    context:
+      type: string
+      description: |
+        Der Klar- oder Klassen-Name des betroffenen Datenobjektes.
+      minLength: 1
+      maxLength: 250
+    source:
+      type: string
+      description: |
+        Das Feld, das den falschen Wert enthält.
+      maxLength: 250
+    rejectedValue:
+      type: string
+      description: |
+        Der beanstandete Wert.
+      maxLength: 250
+    explanation:
+      type: string
+      description: |
+        Die Begründung, warum der Wert nicht den Erwartungen der Implementierung entspricht.
+      maxLength: 250
+    additionalInfo:
+      type: string
+      description: |
+        Zusätzliche, nicht-technische Meta-Informationen oder Lösungshinweise zum jeweiligen Fehler.
+      maxLength: 2000
+
+FailureResponseType:
+  type: string
+  enum:
+    - REST_INPUT_DATA_VALIDATION
+    - BUSINESS_DATA_VALIDATION
+    - BUSINESS_RULE
+    - SYSTEM

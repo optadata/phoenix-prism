@@ -1,0 +1,426 @@
+openapi: 3.0.3
+info:
+  title: Phoenix-P-203-Pflegedokument-Vitalwerte-API
+  description: Phoenix REST-API fuer den das Pflegedokument P-203 Vitalwerte
+  #TODO MTF: Ist das hier für Pflegedokumente oder NUR für Vitalwerte?
+  version: ${pdoku.version}
+servers:
+  - url: 'http://localhost:8080'
+
+tags:
+  - name: Vitalwerte
+    #TODO MTF: Vermutlich sollte man besser für Kopf und Verlauf jeweils eine eigene API und somit ein eigenes Tag definieren!
+
+paths:
+  /api/fe/vitalwertekopf/{vitalwerteKopfId}:
+    get:
+      operationId: "getVitalwerteKopfById"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfs
+          required: true
+          schema:
+            $ref: "#/components/schemas/VitalwerteKopfId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteKopfMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    # TODO MTF: Funktionen definieren für Kopfsätze
+    #    /api/fe/vitalwertekopf/{id}:freigeben:
+    #
+    #    /api/fe/vitalwertekopf/{id}:evaluieren:
+    #
+    #    /api/fe/vitalwertekopf/{id}:abschließen:
+    # TODO MTF: Ggf können Funktionen für das Kopgsatz-Model ausgeführt werden (wir brauchen dann auch Endpoints dafür!)
+
+
+    put:
+      operationId: "putUpdateVitalwerteKopf"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfes, der geschrieben wird
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VitalwerteKopf"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteKopfMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/vitalwertekopf:
+    post:
+      operationId: "postCreateVitalwerteKopf"
+      tags:
+        - Vitalwerte
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VitalwerteKopfNeuanlage"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteKopfMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/vitalwerteverlauf/{vitalwerteVerlaufId}:
+    get:
+      operationId: "getVitalwerteVerlaufById"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteVerlaufId
+          in: path
+          description: ID des VitalwerteVerlaufs
+          required: true
+          schema:
+            $ref: "#/components/schemas/VitalwerteVerlaufId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteVerlaufsEintragMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    put:
+      operationId: "putUpdateVitalwerteVerlauf"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteVerlaufId
+          in: path
+          description: ID des VitalwerteVerlaufs, der geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/VitalwerteVerlaufId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VitalwerteVerlaufsEintrag"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteVerlaufsEintragMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/vitalwertekopf/{vitalwerteKopfId}/vitalwerteverlauf:
+    post:
+      operationId: "postCreateVitalwerteVerlauf"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfs zu dem der Verlauf geschrieben werden soll
+          required: true
+          schema:
+            $ref: "#/components/schemas/VitalwerteKopfId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VitalwerteVerlaufsEintrag"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteVerlaufsEintragMetaInfo"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    get:
+      operationId: "getVitalwerteVerlaeufe"
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfs zu dem die Liste der Verlaufssätze gelesen werden soll
+          required: true
+          schema:
+            $ref: "#/components/schemas/VitalwerteKopfId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VitalwerteVerlaeufe"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+components:
+  schemas:
+
+    PflegedokumentKopf:
+      type: object
+      description: Enthält Properties, welche jedes Pflegedokument hat
+      required:
+        - klientReferenz
+        - status
+        - handzeichen
+        - mitarbeiterReferenz
+      properties:
+        klientReferenz:
+          $ref: "#/components/schemas/KlientReferenz"
+        status:
+          $ref: "#/components/schemas/PflegedokumentStatusEnum"
+        evaluationAm:
+          type: string
+          format: date
+          description: Termin, wann die nächste Evaluation ansteht.
+        handzeichen:
+          $ref: "./__shared-types.yaml#/Shared_Handzeichen"
+        mitarbeiterReferenz:
+          $ref: "#/components/schemas/MitarbeiterReferenz"
+
+
+    PflegedokumentVerlaufsEintrag:
+      type: object
+      properties:
+        korrigiert:
+          type: boolean
+          description: Gibt an ob dieser Satz korrigiert wurde. Ist dieses Flag ein mal true, darf dieser Satz nicht mehr verändert werden -> Validierung.
+        korrekturtext:
+          type: string
+          maxLength: 200
+          description: Dieser Text muss verfüllt werden, wenn ein Satz als Korrigiert merkiert wird. Ansonsten kann dieser Text nicht verfüllt werden.
+        handzeichen:
+          type: string
+          maxLength: 5
+          readOnly: true
+          description: Handzeichen des Mitarbeiters, der den Satz angelegt hat. Wird automatisch verfüllt.
+        mitarbeiter:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Eindeutige Zuordnung zu dem Mitarbeiter, welcher diesen Satz angelegt hat. Wird automatisch verfüllt.
+        istKorrekturFuer:
+          type: string
+          format: uuid
+          description: Referenz auf einen anderen Subsatz. Damit ist dieser Datensatz dann die Korrektur für einen anderen (korrigierten, also korrigiert=true) Satz.
+
+    BlutzuckerMasseinheitEnum:
+      type: string
+      description: Blutzuckermaßeinheit als "mg/dl" oder "mmol/l"
+      enum:
+        - MG_PRO_DL
+        - MMOL_PRO_L
+
+    VitalwerteKopfMetaInfo:
+      type: object
+      required:
+        - id
+        - content
+      properties:
+        id:
+          $ref: '#/components/schemas/VitalwerteKopfId'
+        content:
+          $ref: "#/components/schemas/VitalwerteKopf"
+
+    VitalwerteKopfNeuanlage:
+      type: object
+      description: Datentyp um Kopfdaten für Vitalwerte anzulegen.
+      required:
+        - klientReferenz
+        - vitalwerteKopf
+      properties:
+        klientReferenz:
+          $ref: "#/components/schemas/KlientReferenz"
+        vitalwerteKopf:
+          $ref: "#/components/schemas/VitalwerteKopf"
+
+    VitalwerteKopf:
+      type: object
+      properties:
+        pflegedokumentKopfdaten:
+          $ref: "#/components/schemas/PflegedokumentKopf"
+        blutzuckerEinheit:
+          $ref: "#/components/schemas/BlutzuckerMasseinheitEnum"
+        groesse:
+          type: number
+          minimum: 0
+          maximum: 1000
+          exclusiveMaximum: true
+          description: Körpergröße in cm.
+        bemerkung:
+          type: string
+          maxLength: 200
+        bmiKorrekturwert:
+          type: number
+          minimum: 0
+          maximum: 1000
+          exclusiveMaximum: true
+          description: |
+            Gibt bei Amputationen oder fehlenden Körperteilen einen BMI-Korrekturfaktor an.
+            Kann bei vorhandensein aller Körperteile leer bleiben!
+
+    VitalwerteVerlaufsEintrag:
+      type: object
+      properties:
+        pflegedokumentVerlauf:
+          $ref: "#/components/schemas/PflegedokumentVerlaufsEintrag"
+        kommentar:
+          type: string
+          maxLength: 200
+          description: Frei verfüllbar.
+        messzeitpunkt:
+          type: string
+          format: date-time
+          description: Datum und Zeit, wann die Messung erfolgte (frei verfüllbar, darf nicht in der Zukunft liegen)
+        blutdruck:
+          type: string
+          maxLength: 7
+          description: Der Blutdruck. Beispielwert "120-129".
+        puls:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          exclusiveMaximum: true
+        blutzucker:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          # Werte >1000 sind definitiv Lebensgefährlich, können aber messbar sein. Daher max 10000.
+          exclusiveMaximum: true
+        temperatur:
+          type: number
+          minimum: 1
+          maximum: 255
+        gewicht:
+          type: number
+          minimum: 1
+          maximum: 1000
+          exclusiveMaximum: true
+        bmi:
+          type: number
+          minimum: 1
+          maximum: 100
+          exclusiveMaximum: true
+          description: soll später automatisch berechnet werden, wenn ein Gewicht eingetragen wird!
+        sauerstoff:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Prozentwert der Sauertsoffsättigung. Dargestellt als Fließkommazahl zwischen 0 und 1.
+
+    VitalwerteVerlaufsEintragMetaInfo:
+      type: object
+      required:
+        - id
+        - content
+      properties:
+        id:
+          $ref: "#/components/schemas/VitalwerteVerlaufId"
+        content:
+          $ref: "#/components/schemas/VitalwerteKopf"
+
+    VitalwerteVerlaeufe:
+      type: array
+      items:
+        $ref: "#/components/schemas/VitalwerteVerlaufsEintragMetaInfo"
+
+    VitalwerteKopfId:
+      type: string
+      format: uuid
+
+    VitalwerteVerlaufId:
+      type: string
+      format: uuid
+
+
+    KlientReferenz:
+      type: object
+      description: Der Klient, dessen Dokument dies ist. Wird vom Frontend verfüllt -> Es wird Validierungen geben müssen, welche Verhindern, dass zu viele Sätze zu einem Klienten angelegt werden. Es darf immer nur einen "aktiven" geben.
+      required:
+        - refKlientId
+      properties:
+        refKlientId:
+          $ref: "./__shared-types.yaml#/Shared_KlientId"
+
+    MitarbeiterReferenz:
+      type: object
+      description: Eindeutige Zuordnung zu dem Mitarbeiter, welcher diesen Satz angelegt hat. Wird automatisch verfüllt.
+      required:
+        - refMitarbeiterId
+      properties:
+        refMitarbeiterId:
+          $ref: "./__shared-types.yaml#/Shared_MitarbeiterId"
+
+    PflegedokumentStatusEnum:
+      type: string
+      enum:
+        - NEUANLAGE
+        - FREIGEGEBEN
+        - EVALUATION
+        - ABGESCHLOSSEN
+
+    FailureResponse:
+      $ref: "./__shared-failure-types.yaml#/FailureResponse"

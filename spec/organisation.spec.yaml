@@ -1,0 +1,1093 @@
+openapi: 3.0.3
+info:
+  title: Phoenix-Organisation-API
+  description: Phoenix REST-API fuer den Bereich Organisation/Rechteverwaltung
+  version: ${orga.version}
+servers:
+  - url: 'http://localhost:8080'
+
+tags:
+  - name: Organisationseinheit
+    description: Verwaltung von Organisationseinheiten, welche Gruppen von Mitarbeitern (z.B. für den Dienstplan) sind.
+  - name: Mitarbeiter
+    description: Pflegekräfte und andere Mitarbeiter von Pflegediensten
+  - name: Rolle
+    description: Die Berechtigungen, die Mitarbeiter haben können
+  - name: Schicht
+    description: Die Schichten mit den dazugehörigen Uhrzeiten.
+
+
+paths:
+  /api/fe/mitarbeiter:
+    get:
+      operationId: "getMitarbeiterList"
+      tags:
+        - Mitarbeiter
+      description: Lesen der Liste aller Mitarbeiter
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterPageable"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    post:
+      operationId: "postCreateMitarbeiter"
+      tags:
+        - Mitarbeiter
+      description: Neuanlage eines Mitarbeiters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}:
+    get:
+      operationId: "getMitarbeiterById"
+      tags:
+        - Mitarbeiter
+      description: Lesen eines Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}/person:
+    put:
+      operationId: "putUpdateMitarbeiterPerson"
+      tags:
+        - Mitarbeiter
+      description: Aktualisieren der Personendaten des Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters, für den die Personendaten geschrieben werden.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}/zusatzinformation:
+    put:
+      operationId: "putUpdateMitarbeiterZusatzinformation"
+      tags:
+        - Mitarbeiter
+      description: Aktualisieren der Mitarbeiter-spezifischen Zusatzdaten eines Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters, für den die Zusatzdaten geschrieben werden.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MitarbeiterZusatzinformation"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}/organisationseinheit:
+    get:
+      operationId: "getMitarbeiterOrganisationseinheitList"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier werden die Organisationseinheiten, die einem Mitarbeiter zugewiesen sind, geliefert.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Organisationseinheiten geliefert werden sollen.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    put:
+      operationId: "putMitarbeiterOrganisationseinheitList"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier kann eine Liste von Organisationseinheiten einem Mitarbeiter zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Organisationseinheiten zugewiesen werden sollen.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/OrganisationseinheitId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}/rolle:
+    put:
+      operationId: "putMitarbeiterRolle"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier kann einem Mitarbeiter eine Rolle zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Rolle zugewiesen werden soll.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolleId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MitarbeiterView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/{mitarbeiterId}/berechtigung:
+    get:
+      operationId: "getMitarbeiterBerechtigungList"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier werden die individuellen Berechtigungen(die über die zugewiesene Rolle hinaus gehen) eines Mitarbeiters
+        geliefert.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Berechtigungen geliefert werden sollen.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    put:
+      operationId: "putMitarbeiterBerechtigungList"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier können die individuellen Berechtigungen(die über die zugewiesene Rolle hinaus gehen) einem Mitarbeiter
+        zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Berechtigungen zugewiesen werden sollen.
+          required: true
+          schema:
+            $ref: "#/components/schemas/MitarbeiterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BerechtigungList"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/mitarbeiter/berechtigung:
+    get:
+      operationId: "getAngemeldeterMitarbeiterBerechtigungList"
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier werden die Berechtigungen, die dem angemeldeten Mitarbeiter zugewiesen sind, geliefert.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BerechtigungList"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/organisationseinheit:
+    get:
+      operationId: "getOrganisationseinheitList"
+      tags:
+        - Organisationseinheit
+      description: Lesen der Liste aller Organisationseinheiten
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    post:
+      operationId: "postCreateOrganisationseinheit"
+      tags:
+        - Organisationseinheit
+      description: Neuanlage einer Organisationseinheit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organisationseinheit"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/organisationseinheit/{organisationseinheitId}:
+    get:
+      operationId: "getOrganisationseinheitById"
+      tags:
+        - Organisationseinheit
+      description: Lesen einer Organisationseinheit
+      parameters:
+        - name: organisationseinheitId
+          in: path
+          description: ID der Organisationseinheit
+          required: true
+          schema:
+            $ref: "#/components/schemas/OrganisationseinheitId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    put:
+      operationId: "putUpdateOrganisationseinheit"
+      tags:
+        - Organisationseinheit
+      description: Aktualisieren einer Organisationseinheit
+      parameters:
+        - name: organisationseinheitId
+          in: path
+          description: ID der Organisationseinheit, die geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/OrganisationseinheitId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organisationseinheit"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganisationseinheitView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/rolle:
+    get:
+      operationId: "getRolleList"
+      tags:
+        - Rolle
+      description: Lesen der Liste von Rollen
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RolleView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    post:
+      operationId: "postCreateRolle"
+      tags:
+        - Rolle
+      description: Neuanlage einer Rolle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rolle"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolleView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/rolle/{rolleId}/berechtigung:
+    put:
+      operationId: "putUpdateRolleBerechtigung"
+      tags:
+        - Rolle
+      description: Aktualisieren der Berechtigungen einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle, dessen Berechtigungen aktualisiert werden sollen.
+          required: true
+          schema:
+            $ref: "#/components/schemas/RolleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BerechtigungList"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/rolle/{rolleId}:
+    get:
+      operationId: "getRolleById"
+      tags:
+        - Rolle
+      description: Lesen einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle
+          required: true
+          schema:
+            $ref: "#/components/schemas/RolleId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolleView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    put:
+      operationId: "putUpdateRolle"
+      tags:
+        - Rolle
+      description: Aktualisieren einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle, die geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/RolleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rolle"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolleView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+#  /api/fe/schicht/{schichtId}:
+#    get:
+#      operationId: "getSchichtById"
+#      tags:
+#        - Schicht
+#      parameters:
+#        - name: schichtId
+#          in: path
+#          description: Id der Schicht.
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/SchichtId"
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/SchichtMetaInfo"
+#        400:
+#          description: Phoenix Failure Response
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/FailureResponse"
+#    put:
+#      operationId: "putUpdateSchicht"
+#      tags:
+#        - Schicht
+#      parameters:
+#        - name: schichtId
+#          in: path
+#          description: ID der Schicht, die geschrieben wird.
+#          required: true
+#          schema:
+#            $ref: "#/components/schemas/SchichtId"
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Schicht"
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/SchichtMetaInfo"
+#        400:
+#          description: Phoenix Failure Response
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/FailureResponse"
+#
+#  /api/fe/schicht:
+#    get:
+#      operationId: "getSchichtList"
+#      tags:
+#        - Schicht
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Schicht"
+#        400:
+#          description: Phoenix Failure Response
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/FailureResponse"
+#
+#    post:
+#      operationId: "postCreateSchicht"
+#      tags:
+#        - Schicht
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Schicht"
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/SchichtMetaInfo"
+#        400:
+#          description: Phoenix Failure Response
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/FailureResponse"
+
+components:
+  schemas:
+
+    MitarbeiterPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/MitarbeiterView"
+
+    MitarbeiterView:
+      type: object
+      description: Das **Mitarbeiter**-Model
+      required:
+        - id
+        - person
+        - zusatzinformation
+      properties:
+        id:
+          $ref: "#/components/schemas/MitarbeiterId"
+        person:
+          $ref: "#/components/schemas/Person"
+        zusatzinformation:
+          $ref: "#/components/schemas/MitarbeiterZusatzinformation"
+        rolleId:
+          $ref: "#/components/schemas/RolleId"
+
+    MitarbeiterZusatzinformation:
+      type: object
+      properties:
+        geburtsname:
+          type: string
+          maxLength: 255
+        geburtsdatum:
+          type: string
+          format: date
+        geschlecht:
+          $ref: "#/components/schemas/GeschlechtEnum"
+        staatsangehoerigkeit:
+          $ref: "#/components/schemas/StaatsangehoerigkeitEnum"
+        religion:
+          $ref: "#/components/schemas/ReligionEnum"
+        handzeichen:
+          $ref: "./__shared-types.yaml#/Shared_Handzeichen"
+        eintrittsdatum:
+          type: string
+          format: date
+        beschaeftigtennummer:
+          type: string
+          maxLength: 50
+        personalnummer:
+          type: string
+          maxLength: 50
+        funktion:
+          $ref: "#/components/schemas/BerufsabschlussEnum"
+        qualifikation:
+          $ref: "#/components/schemas/ZusatzqualifikationEnum"
+
+    Person:
+      $ref: "./__shared-types.yaml#/Shared_Person"
+
+    MitarbeiterId:
+      $ref: "./__shared-types.yaml#/Shared_MitarbeiterId"
+
+    GeschlechtEnum:
+      $ref: "./__shared-enums.yaml#/Shared_GeschlechtEnum"
+
+    ReligionEnum:
+      $ref: "./__shared-enums.yaml#/Shared_ReligionEnum"
+
+    StaatsangehoerigkeitEnum:
+      $ref: "./__shared-enums.yaml#/Shared_StaatsangehoerigkeitEnum"
+
+    Organisationseinheit:
+      type: object
+      description: Das **Organisationseinheit**-Model
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: false
+          maxLength: 255
+          description: Name der Organisationseinheit. Mehrere gleiche Name werden nicht unterstützt.
+        kommentar:
+          type: string
+          maxLength: 1000
+          description: Kommentar für die Organisationseinheit.
+        anzeigeDienstplan:
+          type: boolean
+          description: |
+            Wenn true, dann wird die Organisationseinheit im Dienstplan angezeigt.
+            Momentan keine Wirkung.
+
+    OrganisationseinheitId:
+      type: string
+      format: uuid
+
+    OrganisationseinheitView:
+      type: object
+      required:
+        - id
+        - organisationseinheit
+      properties:
+        id:
+          $ref: "#/components/schemas/OrganisationseinheitId"
+        organisationseinheit:
+          $ref: "#/components/schemas/Organisationseinheit"
+
+    BerufsabschlussEnum:
+      type: string
+      description: |
+        Liste der Berufsabschlüsse der ambulanten Pflege nach BeVaP. 
+        Die hier verwendeten Kürzel entsprechen der "Codierung" des BeVaP, Underscores("_") sind mit Bindestrich("-") zu ersetzen um
+        der Originalen Codierung des BeVaP zu entsprechen.
+        Beispiel: 
+        Die Enum-Konstante "B_APFH12_BY" entspricht der BeVaP-Codierung "B-APFH12-BY", welche für 
+        die Ausbildung zur "Altenpflegehelfer:in - 12 Monate" für "Bayern" (BY) steht.
+      enum:
+        - B_APFA24_HB
+        - B_APFH12_BB
+        - B_APFH12_BW
+        - B_APFH12_BY
+        - B_APFH12_HB
+        - B_APFH12_HE
+        - B_APFH12_NW
+        - B_APFH12_RP
+        - B_APFH12_SH
+        - B_APFH12_SL
+        - B_APFH12_TH
+        - B_APFH24_HH
+        - B_APF36_DE
+        - B_BATH36_DE
+        - B_DH12_BW
+        - B_DH12_NI
+        - B_EBPF36_DE
+        - B_ETH36_DE
+        - B_FAK_DDR
+        - B_FAKS_DDR
+        - B_FPF24_HE
+        - B_FPF24_MV
+        - B_FPF24_RP
+        - B_FPF36_BE
+        - B_FPF36_MV
+        - B_FPF36_NW
+        - B_GKIKPF36_DE
+        - B_GKPFA12_NW
+        - B_GKPFH12_BB
+        - B_GKPFH12_BE
+        - B_GKPFH12_BW
+        - B_GKPFH12_TH
+        - B_GKPFHGA24_HB
+        - B_GKPF36_DE
+        - B_GPFA24_HH
+        - B_HEBA36_DE
+        - B_HERZ36_HH
+        - B_HERZ36_SH
+        - B_HERZA24_BW
+        - B_HERZH12_BW
+        - B_HERZH12_NW
+        - B_HERZH12_ST
+        - B_HPFA24_HB
+        - B_HPFH12_BY
+        - B_HPFH24_SN
+        - B_HPF24_HB
+        - B_HPF24_MV
+        - B_HPF24_ST
+        - B_HPF36_BB
+        - B_HPF36_BE
+        - B_HPF36_BW
+        - B_HPF36_BY
+        - B_HPF36_HE
+        - B_HPF36_HH
+        - B_HPF36_NI
+        - B_HPF36_NW
+        - B_HPF36_RP
+        - B_HPF36_SH
+        - B_HPF36_SL
+        - B_HPF36_SN
+        - B_HPF36_TH
+        - B_KI36_DE
+        - B_KAPFH18_MV
+        - B_KGY24_DE
+        - B_KPFH12_DE
+        - B_KPFH12_HE
+        - B_KPFH12_NW
+        - B_KPFH12_SH
+        - B_KPFH12_SL
+        - B_KPFH12_ST
+        - B_KPFH12_SN
+        - B_K36_DE
+        - B_MFA36_DE
+        - B_MTAO36_TH
+        - B_NOT36_DE
+        - B_OTAN36_SH
+        - B_OTAS36_DE
+        - B_OTAS36_ST
+        - B_PFA23_SL
+        - B_PFA24_NI
+        - B_PFA24_SH
+        - B_PFAHF36_HH
+        - B_PFFA12_NW
+        - B_PFFHA12_BY
+        - B_PFFHK12_BY
+        - B_PA36_DE
+        - B_PS36_DE
+        - B_PFH12_ST
+        - B_PFHOQ_DE
+        - B_PHY36_DE
+        - B_RA24_DE
+        - B_SA24_BE
+        - B_SA24_HB
+        - B_SA24_HE
+        - B_SA24_MV
+        - B_SA24_NI
+        - B_SA24_NW
+        - B_SA24_RP
+        - B_SA24_SN
+        - B_SA24_ST
+
+    ZusatzqualifikationEnum:
+      type: string
+      description: |
+        Enthält Zusatzqualifikationen, welche allerdings hier ein ODITS-Prefix haben, da diese nicht alle exakt den Codierungen des 
+        BfArM entsprechen können, da diese nicht eindeutig sind:
+        "ODITS_LFW_PO" steht für "ODITS-LFW-PO", "Landesrechtliche Fachweiterbildung: Pflege in der Onkologie"
+        "ODITS_LFW_POP" steht für "ODITS-LFW-PO", "Landesrechtliche Fachweiterbildung: Pflege im Operationsdienst"
+        
+        Alle weiteren Codierungen entsprechen den Codierungen nach BfArM
+      enum:
+        - ODITS_LFW_IA
+        - ODITS_LFW_PIA
+        - ODITS_LFW_PN
+        - ODITS_LFW_NP
+        - ODITS_LFW_PO
+        - ODITS_LFW_POP
+        - ODITS_LFW_PS
+        - ODITS_FW_SA_SZ
+        - ODITS_LFW_PE
+        - ODITS_FW_ATMO
+        - ODITS_FW_APP
+        - ODITS_FW_SA_SV
+        - ODITS_W1
+        - ODITS_W2
+        - ODITS_W3
+        - ODITS_W4
+        - ODITS_W5
+        - ODITS_W6
+        - ODITS_W7
+        - ODITS_W8
+        - ODITS_Z_B200
+        - ODITS_Z_B120
+        - ODITS_Z_PG320
+        - ODITS_Z_VW169
+        - ODITS_Z_VW84
+        - ODITS_Z_PC160
+        - ODITS_Z_PC40
+        - ODITS_PDL
+        - ODITS_PALZ
+        - ODITS_BETRQ
+        - ODITS_Z_S
+
+    RechtEnum:
+      type: string
+      enum:
+        - LESEN
+        - SCHREIBEN
+        - ANLEGEN
+
+    BereichEnum:
+      type: string
+      enum:
+        - STARTSEITE
+        - KLIENTEN
+        - MITARBEITER
+        - AERZTE
+        - ROLLEN_UND_RECHTE
+        - ORGANISATIONSEINHEITEN
+
+    BereichGruppeEnum:
+      description: |
+        Enthält Gruppierungen, nach denen ein BereichEnum gruppiert sein kann. Ein Bereich(Enum) gehört dabei einer 
+        BereichGruppe(Enum) an. Einer BereichGruppe(Enum) können beliebig viele Bereich(Enums) angehören.
+      type: string
+      enum:
+        - SCHREIBTISCH
+        - STAMMBLATT
+        - MITARBEITERMAPPE
+        - DIENSTPLAN
+        - BERICHTE
+
+    Berechtigung:
+      type: object
+      description: Die Berechtigung verkörpert das **Recht**, welches man für einen **Bereich** besitzt
+      required:
+        - bereich
+        - recht
+      properties:
+        bereich:
+          $ref: "#/components/schemas/BereichEnum"
+        recht:
+          $ref: "#/components/schemas/RechtEnum"
+
+    BerechtigungList:
+      description: Eine Liste von Berechtigungen
+      type: array
+      items:
+        $ref: "#/components/schemas/Berechtigung"
+
+    BerechtigungGroupList:
+      description: Enthält Listen von Berechtigungen, welche nach BereichGruppeEnum(= der Key) gruppiert sind.
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/BerechtigungList'
+
+    Rolle:
+      type: object
+      description: Enthält die Basisdaten einer Rolle, wie Name und Kommentar.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: false
+          maxLength: 255
+          description: Name der Rolle. Mehrere gleiche Namen werden nicht unterstützt.
+        kommentar:
+          type: string
+          maxLength: 1000
+          description: Bemerkung für die Rolle.
+
+    RolleId:
+      type: string
+      format: uuid
+
+    RolleView:
+      type: object
+      description: Beschreibt eine Rolle
+      required:
+        - id
+        - rolle
+        - berechtigungen
+      properties:
+        id:
+          $ref: "#/components/schemas/RolleId"
+        rolle:
+          $ref: "#/components/schemas/Rolle"
+        berechtigungen:
+          $ref: '#/components/schemas/BerechtigungGroupList'
+
+    #    Schicht:
+    #      type: object
+    #      description: |
+    #        Eine Schicht. Gleiche Namen dürfen nicht existieren. Die Zeiten der Schichten dürfen sich nicht überschneiden.
+    #      required:
+    #        - name
+    #        - von
+    #        - bis
+    #      properties:
+    #        name:
+    #          type: string
+    #          nullable: false
+    #          minimum: 0
+    #          maximum: 23
+    #          description: Der Name der Schicht.
+    #        von:
+    #          $ref: "#/components/schemas/SchichtZeit"
+    #        bis:
+    #          $ref: "#/components/schemas/SchichtZeit"
+    #
+    #    SchichtId:
+    #      type: string
+    #      format: uuid
+    #
+    #    SchichtMetaInfo:
+    #      type: object
+    #      required:
+    #        - id
+    #        - content
+    #      properties:
+    #        id:
+    #          $ref: "#/components/schemas/SchichtId"
+    #        content:
+    #          $ref: "#/components/schemas/Schicht"
+    #
+    #    SchichtZeit:
+    #      type: object
+    #      required:
+    #        - stunde
+    #        - minute
+    #      properties:
+    #        stunde:
+    #          type: integer
+    #          nullable: false
+    #          minimum: 0
+    #          maximum: 23
+    #          description: Die Start/End-**Uhrzeit** der Schicht.
+    #        minute:
+    #          type: integer
+    #          nullable: false
+    #          minimum: 0
+    #          maximum: 59
+    #          description: Die Start/End-**Minute** der Schicht.
+
+    FailureResponse:
+      $ref: "./__shared-failure-types.yaml#/FailureResponse"

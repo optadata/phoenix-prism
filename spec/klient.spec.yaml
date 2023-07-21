@@ -1,0 +1,547 @@
+openapi: 3.0.3
+info:
+  title: Phoenix-Klientenmappe-API
+  description: Phoenix REST-API fuer den Bereich Klientenmappe/Stammblatt
+  version: ${klient.version}
+servers:
+  - url: 'http://localhost:8080'
+
+tags:
+  - name: Klient
+    description: Die vom Pflegedienst betreute Person wird in der Anwendung als 'Klient' bezeichnet.
+  - name: Arzt
+    description: Der behandelnde Arzt eines Klienten, als Ansprechpartner für medizinische Nachfragen.
+
+paths:
+  /api/fe/klient:
+    get:
+      operationId: "getKlientList"
+      tags:
+        - Klient
+      description: Lesen der Liste aller Klienten
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientPageable"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    post:
+      operationId: "postCreateKlient"
+      tags:
+        - Klient
+      description: Neuanlage eines Klienten
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/klient/{klientId}:
+    get:
+      operationId: "getKlientById"
+      tags:
+        - Klient
+      description: Lesen eines Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/klient/{klientId}/person:
+    put:
+      operationId: "putUpdateKlientPerson"
+      tags:
+        - Klient
+      description: Aktualisieren der Personendaten eines Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/klient/{klientId}/hauptansprechpartner:
+    put:
+      operationId: "putUpdateKlientHauptansprechpartner"
+      tags:
+        - Klient
+      description: Zuweisen der Informationen des Hauptansprechpartners zu einem Klienten.
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    delete:
+      operationId: "deleteKlientHauptansprechpartner"
+      tags:
+        - Klient
+      description: Entfernen des Hauptansprechpartners des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, für den der Hauptansprechpartner gelöscht werden soll
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+
+  /api/fe/klient/{klientId}/zusatzinformation:
+    put:
+      operationId: "putUpdateKlientZusatzinformation"
+      tags:
+        - Klient
+      description: Aktualisieren der Klienten-spezifischen Informationen des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KlientZusatzinformation"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/klient/{klientId}/arzt:
+    put:
+      operationId: "putUpdateArztZuweisung"
+      tags:
+        - Klient
+      description: Weist dem Klienten einen Arzt als Hausarzt zu.
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Arztes zu dem der Satz geschrieben werden soll
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArztId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    delete:
+      operationId: "deleteKlientArztZuweisung"
+      tags:
+        - Klient
+      description: Entfernt den zugewiesenen Arzt des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Arztes zu dem der Satz geschrieben werden soll
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlientView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/arzt:
+    get:
+      operationId: "getArztList"
+      tags:
+        - Arzt
+      description: Lesen der Liste aller Ärzte
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArztPageable"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+    post:
+      operationId: "postCreateArzt"
+      tags:
+        - Arzt
+      description: Neuanlage eines Arztes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArztView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/arzt/{arztId}:
+    get:
+      operationId: "getArztById"
+      tags:
+        - Arzt
+      description: Lesen eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes.
+          required: true
+          schema:
+            $ref: "#/components/schemas/ArztId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArztView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/arzt/{arztId}/zusatzinformation:
+    put:
+      operationId: "putUpdateArztZusatzinformation"
+      tags:
+        - Arzt
+      description: Aktualisieren der Arzt-spezifischen zusatzdaten eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes, der geschrieben wird.
+          required: true
+          schema:
+            $ref: "#/components/schemas/ArztId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArztZusatzinformation"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArztView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/arzt/{arztId}/person:
+    put:
+      operationId: "putUpdateArztPerson"
+      tags:
+        - Arzt
+      description: Aktualisieren der Personendaten eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes, der geschrieben wird.
+          required: true
+          schema:
+            $ref: "#/components/schemas/ArztId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArztView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+components:
+  schemas:
+
+    KlientPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/KlientView"
+
+    KlientView:
+      type: object
+      description:
+        Kompletter Datensatz in der Anzeige (nur fuer read-only gedacht)
+      required:
+        - id
+        - person
+        - zusatzinformation
+        - hauptansprechpartner
+      properties:
+        id:
+          $ref: "#/components/schemas/KlientId"
+        person:
+          $ref: "#/components/schemas/Person"
+        zusatzinformation:
+          $ref: "#/components/schemas/KlientZusatzinformation"
+        hauptansprechpartner:
+          $ref: "#/components/schemas/Person"
+        hausarzt:
+          $ref: "#/components/schemas/ArztId"
+
+    KlientZusatzinformation:
+      type: object
+      properties:
+        geburtsname:
+          type: string
+          maxLength: 255
+        geburtsdatum:
+          type: string
+          format: date
+        geschlecht:
+          $ref: "#/components/schemas/GeschlechtEnum"
+        staatsangehoerigkeit:
+          $ref: "#/components/schemas/StaatsangehoerigkeitEnum"
+        religion:
+          $ref: "#/components/schemas/ReligionEnum"
+        familienstand:
+          $ref: "#/components/schemas/FamilienstandEnum"
+        geburtsort:
+          type: string
+          maxLength: 255
+        versichertennr:
+          type: string
+          maxLength: 50
+        notiz:
+          type: string
+          maxLength: 1000
+
+    Person:
+      $ref: "./__shared-types.yaml#/Shared_Person"
+
+    ArztId:
+      type: string
+      format: uuid
+
+    ArztView:
+      type: object
+      required:
+        - id
+        - person
+        - arztZusatzinformation
+      properties:
+        id:
+          $ref: "#/components/schemas/ArztId"
+        person:
+          $ref: "#/components/schemas/Person"
+        arztZusatzinformation:
+          $ref: "#/components/schemas/ArztZusatzinformation"
+
+    ArztZusatzinformation:
+      type: object
+      properties:
+        fachrichtung:
+          type: string
+          maxLength: 255
+          description: Die Fachrichtung des Arztes.
+        arztnummer:
+          type: string
+          minLength: 10
+          maxLength: 10
+
+    ArztPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArztView"
+
+    KlientId:
+      $ref: "./__shared-types.yaml#/Shared_KlientId"
+
+    AnredeEnum:
+      $ref: "./__shared-enums.yaml#/Shared_AnredeEnum"
+
+    TitelEnum:
+      $ref: "./__shared-enums.yaml#/Shared_TitelEnum"
+
+    GeschlechtEnum:
+      $ref: "./__shared-enums.yaml#/Shared_GeschlechtEnum"
+
+    ReligionEnum:
+      $ref: "./__shared-enums.yaml#/Shared_ReligionEnum"
+
+    StaatsangehoerigkeitEnum:
+      $ref: "./__shared-enums.yaml#/Shared_StaatsangehoerigkeitEnum"
+
+    FamilienstandEnum:
+      type: string
+      enum:
+        - LEDIG
+        - VERHEIRATET
+        - VERWITWET
+        - GESCHIEDEN
+        - EHE_AUFGEHOBEN
+        - IN_EINGETRAGENER_LEBENSPARTNERSCHAFT
+        - DURCH_TOD_AUFGELOESTE_LEBENSPARTNERSCHAFT
+        - AUFGEHOBENE_LEBENSPARTNERSCHAFT
+        - DURCH_TODESERKLAERUNG_AUFGELOESTE_LEBENSPARTNERSCHAFT
+        - NICHT_BEKANNT
+
+    FailureResponse:
+      $ref: "./__shared-failure-types.yaml#/FailureResponse"

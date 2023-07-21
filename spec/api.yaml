@@ -1,0 +1,1991 @@
+openapi: 3.0.3
+info:
+  title: Phoenix-P-203-Pflegedokument-Vitalwerte-API
+  description: Phoenix REST-API fuer den das Pflegedokument P-203 Vitalwerte
+  version: ${pdoku.version}
+servers:
+  - url: http://localhost:8080
+  - url: http://localhost:8080
+  - url: http://localhost:8080
+  - url: http://localhost:8080
+tags:
+  - name: Klient
+    description: >-
+      Die vom Pflegedienst betreute Person wird in der Anwendung als 'Klient'
+      bezeichnet.
+  - name: Arzt
+    description: >-
+      Der behandelnde Arzt eines Klienten, als Ansprechpartner für medizinische
+      Nachfragen.
+  - name: Mandant
+  - name: Organisationseinheit
+    description: >-
+      Verwaltung von Organisationseinheiten, welche Gruppen von Mitarbeitern
+      (z.B. für den Dienstplan) sind.
+  - name: Mitarbeiter
+    description: Pflegekräfte und andere Mitarbeiter von Pflegediensten
+  - name: Rolle
+    description: Die Berechtigungen, die Mitarbeiter haben können
+  - name: Schicht
+    description: Die Schichten mit den dazugehörigen Uhrzeiten.
+  - name: Vitalwerte
+paths:
+  /api/fe/klient:
+    get:
+      operationId: getKlientList
+      tags:
+        - Klient
+      description: Lesen der Liste aller Klienten
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientPageable'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    post:
+      operationId: postCreateKlient
+      tags:
+        - Klient
+      description: Neuanlage eines Klienten
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/klient/{klientId}:
+    get:
+      operationId: getKlientById
+      tags:
+        - Klient
+      description: Lesen eines Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/klient/{klientId}/person:
+    put:
+      operationId: putUpdateKlientPerson
+      tags:
+        - Klient
+      description: Aktualisieren der Personendaten eines Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/klient/{klientId}/hauptansprechpartner:
+    put:
+      operationId: putUpdateKlientHauptansprechpartner
+      tags:
+        - Klient
+      description: Zuweisen der Informationen des Hauptansprechpartners zu einem Klienten.
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    delete:
+      operationId: deleteKlientHauptansprechpartner
+      tags:
+        - Klient
+      description: Entfernen des Hauptansprechpartners des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: >-
+            ID des Klienten, für den der Hauptansprechpartner gelöscht werden
+            soll
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/klient/{klientId}/zusatzinformation:
+    put:
+      operationId: putUpdateKlientZusatzinformation
+      tags:
+        - Klient
+      description: Aktualisieren der Klienten-spezifischen Informationen des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten, der geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KlientZusatzinformation'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/klient/{klientId}/arzt:
+    put:
+      operationId: putUpdateArztZuweisung
+      tags:
+        - Klient
+      description: Weist dem Klienten einen Arzt als Hausarzt zu.
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Arztes zu dem der Satz geschrieben werden soll
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArztId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    delete:
+      operationId: deleteKlientArztZuweisung
+      tags:
+        - Klient
+      description: Entfernt den zugewiesenen Arzt des Klienten
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Arztes zu dem der Satz geschrieben werden soll
+          required: true
+          schema:
+            $ref: '#/components/schemas/KlientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KlientView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/arzt:
+    get:
+      operationId: getArztList
+      tags:
+        - Arzt
+      description: Lesen der Liste aller Ärzte
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArztPageable'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    post:
+      operationId: postCreateArzt
+      tags:
+        - Arzt
+      description: Neuanlage eines Arztes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArztView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/arzt/{arztId}:
+    get:
+      operationId: getArztById
+      tags:
+        - Arzt
+      description: Lesen eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ArztId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArztView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/arzt/{arztId}/zusatzinformation:
+    put:
+      operationId: putUpdateArztZusatzinformation
+      tags:
+        - Arzt
+      description: Aktualisieren der Arzt-spezifischen zusatzdaten eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes, der geschrieben wird.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ArztId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArztZusatzinformation'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArztView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/arzt/{arztId}/person:
+    put:
+      operationId: putUpdateArztPerson
+      tags:
+        - Arzt
+      description: Aktualisieren der Personendaten eines Arztes
+      parameters:
+        - name: arztId
+          in: path
+          description: ID des Arztes, der geschrieben wird.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ArztId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArztView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mandant:
+    get:
+      operationId: getMandantenListe
+      tags:
+        - Mandant
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandantPageable'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putCreateMandant
+      tags:
+        - Mandant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mandant'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mandant'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mandant/{publicMandantId}/status:freischalten:
+    put:
+      operationId: putMandantFreischalten
+      tags:
+        - Mandant
+      parameters:
+        - name: publicMandantId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/PublicMandantId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mandant'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mandant/{publicMandantId}/status:sperren:
+    put:
+      operationId: putMandantSperren
+      tags:
+        - Mandant
+      parameters:
+        - name: publicMandantId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/PublicMandantId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mandant'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter:
+    get:
+      operationId: getMitarbeiterList
+      tags:
+        - Mitarbeiter
+      description: Lesen der Liste aller Mitarbeiter
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterPageable'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    post:
+      operationId: postCreateMitarbeiter
+      tags:
+        - Mitarbeiter
+      description: Neuanlage eines Mitarbeiters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}:
+    get:
+      operationId: getMitarbeiterById
+      tags:
+        - Mitarbeiter
+      description: Lesen eines Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}/person:
+    put:
+      operationId: putUpdateMitarbeiterPerson
+      tags:
+        - Mitarbeiter
+      description: Aktualisieren der Personendaten des Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters, für den die Personendaten geschrieben werden.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}/zusatzinformation:
+    put:
+      operationId: putUpdateMitarbeiterZusatzinformation
+      tags:
+        - Mitarbeiter
+      description: >-
+        Aktualisieren der Mitarbeiter-spezifischen Zusatzdaten eines
+        Mitarbeiters
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters, für den die Zusatzdaten geschrieben werden.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MitarbeiterZusatzinformation'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}/organisationseinheit:
+    get:
+      operationId: getMitarbeiterOrganisationseinheitList
+      tags:
+        - Mitarbeiter
+      description: >
+        Hier werden die Organisationseinheiten, die einem Mitarbeiter zugewiesen
+        sind, geliefert.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: >-
+            ID des Mitarbeiters für den die Organisationseinheiten geliefert
+            werden sollen.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putMitarbeiterOrganisationseinheitList
+      tags:
+        - Mitarbeiter
+      description: >
+        Hier kann eine Liste von Organisationseinheiten einem Mitarbeiter
+        zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: >-
+            ID des Mitarbeiters für den die Organisationseinheiten zugewiesen
+            werden sollen.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrganisationseinheitId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}/rolle:
+    put:
+      operationId: putMitarbeiterRolle
+      tags:
+        - Mitarbeiter
+      description: |
+        Hier kann einem Mitarbeiter eine Rolle zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: ID des Mitarbeiters für den die Rolle zugewiesen werden soll.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolleId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MitarbeiterView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/{mitarbeiterId}/berechtigung:
+    get:
+      operationId: getMitarbeiterBerechtigungList
+      tags:
+        - Mitarbeiter
+      description: >
+        Hier werden die individuellen Berechtigungen(die über die zugewiesene
+        Rolle hinaus gehen) eines Mitarbeiters
+
+        geliefert.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: >-
+            ID des Mitarbeiters für den die Berechtigungen geliefert werden
+            sollen.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putMitarbeiterBerechtigungList
+      tags:
+        - Mitarbeiter
+      description: >
+        Hier können die individuellen Berechtigungen(die über die zugewiesene
+        Rolle hinaus gehen) einem Mitarbeiter
+
+        zugewiesen werden.
+      parameters:
+        - name: mitarbeiterId
+          in: path
+          description: >-
+            ID des Mitarbeiters für den die Berechtigungen zugewiesen werden
+            sollen.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MitarbeiterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerechtigungList'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/mitarbeiter/berechtigung:
+    get:
+      operationId: getAngemeldeterMitarbeiterBerechtigungList
+      tags:
+        - Mitarbeiter
+      description: >
+        Hier werden die Berechtigungen, die dem angemeldeten Mitarbeiter
+        zugewiesen sind, geliefert.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungList'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/organisationseinheit:
+    get:
+      operationId: getOrganisationseinheitList
+      tags:
+        - Organisationseinheit
+      description: Lesen der Liste aller Organisationseinheiten
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    post:
+      operationId: postCreateOrganisationseinheit
+      tags:
+        - Organisationseinheit
+      description: Neuanlage einer Organisationseinheit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organisationseinheit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/organisationseinheit/{organisationseinheitId}:
+    get:
+      operationId: getOrganisationseinheitById
+      tags:
+        - Organisationseinheit
+      description: Lesen einer Organisationseinheit
+      parameters:
+        - name: organisationseinheitId
+          in: path
+          description: ID der Organisationseinheit
+          required: true
+          schema:
+            $ref: '#/components/schemas/OrganisationseinheitId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putUpdateOrganisationseinheit
+      tags:
+        - Organisationseinheit
+      description: Aktualisieren einer Organisationseinheit
+      parameters:
+        - name: organisationseinheitId
+          in: path
+          description: ID der Organisationseinheit, die geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/OrganisationseinheitId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organisationseinheit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationseinheitView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/rolle:
+    get:
+      operationId: getRolleList
+      tags:
+        - Rolle
+      description: Lesen der Liste von Rollen
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolleView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    post:
+      operationId: postCreateRolle
+      tags:
+        - Rolle
+      description: Neuanlage einer Rolle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rolle'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolleView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/rolle/{rolleId}/berechtigung:
+    put:
+      operationId: putUpdateRolleBerechtigung
+      tags:
+        - Rolle
+      description: Aktualisieren der Berechtigungen einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle, dessen Berechtigungen aktualisiert werden sollen.
+          required: true
+          schema:
+            $ref: '#/components/schemas/RolleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerechtigungList'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerechtigungGroupList'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/rolle/{rolleId}:
+    get:
+      operationId: getRolleById
+      tags:
+        - Rolle
+      description: Lesen einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle
+          required: true
+          schema:
+            $ref: '#/components/schemas/RolleId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolleView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putUpdateRolle
+      tags:
+        - Rolle
+      description: Aktualisieren einer Rolle
+      parameters:
+        - name: rolleId
+          in: path
+          description: ID der Rolle, die geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/RolleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rolle'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolleView'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/vitalwertekopf/{vitalwerteKopfId}:
+    get:
+      operationId: getVitalwerteKopfById
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfs
+          required: true
+          schema:
+            $ref: '#/components/schemas/VitalwerteKopfId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteKopfMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putUpdateVitalwerteKopf
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfes, der geschrieben wird
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalwerteKopf'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteKopfMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/vitalwertekopf:
+    post:
+      operationId: postCreateVitalwerteKopf
+      tags:
+        - Vitalwerte
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalwerteKopfNeuanlage'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteKopfMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/vitalwerteverlauf/{vitalwerteVerlaufId}:
+    get:
+      operationId: getVitalwerteVerlaufById
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteVerlaufId
+          in: path
+          description: ID des VitalwerteVerlaufs
+          required: true
+          schema:
+            $ref: '#/components/schemas/VitalwerteVerlaufId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteVerlaufsEintragMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    put:
+      operationId: putUpdateVitalwerteVerlauf
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteVerlaufId
+          in: path
+          description: ID des VitalwerteVerlaufs, der geschrieben wird
+          required: true
+          schema:
+            $ref: '#/components/schemas/VitalwerteVerlaufId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalwerteVerlaufsEintrag'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteVerlaufsEintragMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+  /api/fe/vitalwertekopf/{vitalwerteKopfId}/vitalwerteverlauf:
+    post:
+      operationId: postCreateVitalwerteVerlauf
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: ID des VitalwerteKopfs zu dem der Verlauf geschrieben werden soll
+          required: true
+          schema:
+            $ref: '#/components/schemas/VitalwerteKopfId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalwerteVerlaufsEintrag'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteVerlaufsEintragMetaInfo'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+    get:
+      operationId: getVitalwerteVerlaeufe
+      tags:
+        - Vitalwerte
+      parameters:
+        - name: vitalwerteKopfId
+          in: path
+          description: >-
+            ID des VitalwerteKopfs zu dem die Liste der Verlaufssätze gelesen
+            werden soll
+          required: true
+          schema:
+            $ref: '#/components/schemas/VitalwerteKopfId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalwerteVerlaeufe'
+        '400':
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+components:
+  schemas:
+    KlientPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/KlientView'
+    KlientView:
+      type: object
+      description: Kompletter Datensatz in der Anzeige (nur fuer read-only gedacht)
+      required:
+        - id
+        - person
+        - zusatzinformation
+        - hauptansprechpartner
+      properties:
+        id:
+          $ref: '#/components/schemas/KlientId'
+        person:
+          $ref: '#/components/schemas/Person'
+        zusatzinformation:
+          $ref: '#/components/schemas/KlientZusatzinformation'
+        hauptansprechpartner:
+          $ref: '#/components/schemas/Person'
+        hausarzt:
+          $ref: '#/components/schemas/ArztId'
+    KlientZusatzinformation:
+      type: object
+      properties:
+        geburtsname:
+          type: string
+          maxLength: 255
+        geburtsdatum:
+          type: string
+          format: date
+        geschlecht:
+          $ref: '#/components/schemas/GeschlechtEnum'
+        staatsangehoerigkeit:
+          $ref: '#/components/schemas/StaatsangehoerigkeitEnum'
+        religion:
+          $ref: '#/components/schemas/ReligionEnum'
+        familienstand:
+          $ref: '#/components/schemas/FamilienstandEnum'
+        geburtsort:
+          type: string
+          maxLength: 255
+        versichertennr:
+          type: string
+          maxLength: 50
+        notiz:
+          type: string
+          maxLength: 1000
+    Person:
+      $ref: ./__shared-types.yaml#/Shared_Person
+    ArztId:
+      type: string
+      format: uuid
+    ArztView:
+      type: object
+      required:
+        - id
+        - person
+        - arztZusatzinformation
+      properties:
+        id:
+          $ref: '#/components/schemas/ArztId'
+        person:
+          $ref: '#/components/schemas/Person'
+        arztZusatzinformation:
+          $ref: '#/components/schemas/ArztZusatzinformation'
+    ArztZusatzinformation:
+      type: object
+      properties:
+        fachrichtung:
+          type: string
+          maxLength: 255
+          description: Die Fachrichtung des Arztes.
+        arztnummer:
+          type: string
+          minLength: 10
+          maxLength: 10
+    ArztPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArztView'
+    KlientId:
+      $ref: ./__shared-types.yaml#/Shared_KlientId
+    AnredeEnum:
+      $ref: ./__shared-enums.yaml#/Shared_AnredeEnum
+    TitelEnum:
+      $ref: ./__shared-enums.yaml#/Shared_TitelEnum
+    GeschlechtEnum:
+      $ref: ./__shared-enums.yaml#/Shared_GeschlechtEnum
+    ReligionEnum:
+      $ref: ./__shared-enums.yaml#/Shared_ReligionEnum
+    StaatsangehoerigkeitEnum:
+      $ref: ./__shared-enums.yaml#/Shared_StaatsangehoerigkeitEnum
+    FamilienstandEnum:
+      type: string
+      enum:
+        - LEDIG
+        - VERHEIRATET
+        - VERWITWET
+        - GESCHIEDEN
+        - EHE_AUFGEHOBEN
+        - IN_EINGETRAGENER_LEBENSPARTNERSCHAFT
+        - DURCH_TOD_AUFGELOESTE_LEBENSPARTNERSCHAFT
+        - AUFGEHOBENE_LEBENSPARTNERSCHAFT
+        - DURCH_TODESERKLAERUNG_AUFGELOESTE_LEBENSPARTNERSCHAFT
+        - NICHT_BEKANNT
+    FailureResponse:
+      $ref: ./__shared-failure-types.yaml#/FailureResponse
+    PublicMandantId:
+      $ref: ./__shared-types.yaml#/Shared_PublicMandantId
+    Mandant:
+      type: object
+      description: >
+        Der Mandant ist gleichzusetzen mit dem jeweiligen Pflegedienstleister.
+        Der Datensatz ist eindeutig
+
+        und wir aus dem Optadata-Backoffice-System angelegt. Hierzu werden
+        Kundennummer und die im KeyCloak
+
+        hinterlegte 'PublicMandantId' verwendet.
+      required:
+        - publicMandantId
+        - kundenNummer
+      properties:
+        publicMandantId:
+          $ref: '#/components/schemas/PublicMandantId'
+        kundenNummer:
+          type: string
+          readOnly: true
+          description: >
+            Die Kundennummer wird in den buchhalterischen Systemen des
+            Optadata-Backoffice generiert und hier als
+
+            zusaetzlicher Identifikator verwendet.
+          minLength: 4
+          maxLength: 8
+          pattern: '[0-9]+'
+        aktiv:
+          type: boolean
+          readOnly: true
+          default: false
+          description: >
+            Gibt an, ob der Mandant mit dem System arbeiten kann oder nicht.
+            Ggf. kann hier auf zentraler Ebene
+
+            eine Art "Notfallschalter" etabliert werden, um einzelne Mandanten
+            aufgrund von Unregelmaessigkeiten
+
+            von der Nutzung der Phoenix-Anwendung temporär auszuschliessen.
+
+            Kann auch verwendet werden, um einen Zugriff nach einem Zieldatum zu
+            deaktivieren (bspw. Kündigung).
+    MandantPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mandant'
+    MitarbeiterPageable:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/MitarbeiterView'
+    MitarbeiterView:
+      type: object
+      description: Das **Mitarbeiter**-Model
+      required:
+        - id
+        - person
+        - zusatzinformation
+      properties:
+        id:
+          $ref: '#/components/schemas/MitarbeiterId'
+        person:
+          $ref: '#/components/schemas/Person'
+        zusatzinformation:
+          $ref: '#/components/schemas/MitarbeiterZusatzinformation'
+        rolleId:
+          $ref: '#/components/schemas/RolleId'
+    MitarbeiterZusatzinformation:
+      type: object
+      properties:
+        geburtsname:
+          type: string
+          maxLength: 255
+        geburtsdatum:
+          type: string
+          format: date
+        geschlecht:
+          $ref: '#/components/schemas/GeschlechtEnum'
+        staatsangehoerigkeit:
+          $ref: '#/components/schemas/StaatsangehoerigkeitEnum'
+        religion:
+          $ref: '#/components/schemas/ReligionEnum'
+        handzeichen:
+          $ref: ./__shared-types.yaml#/Shared_Handzeichen
+        eintrittsdatum:
+          type: string
+          format: date
+        beschaeftigtennummer:
+          type: string
+          maxLength: 50
+        personalnummer:
+          type: string
+          maxLength: 50
+        funktion:
+          $ref: '#/components/schemas/BerufsabschlussEnum'
+        qualifikation:
+          $ref: '#/components/schemas/ZusatzqualifikationEnum'
+    MitarbeiterId:
+      $ref: ./__shared-types.yaml#/Shared_MitarbeiterId
+    Organisationseinheit:
+      type: object
+      description: Das **Organisationseinheit**-Model
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: false
+          maxLength: 255
+          description: >-
+            Name der Organisationseinheit. Mehrere gleiche Name werden nicht
+            unterstützt.
+        kommentar:
+          type: string
+          maxLength: 1000
+          description: Kommentar für die Organisationseinheit.
+        anzeigeDienstplan:
+          type: boolean
+          description: >
+            Wenn true, dann wird die Organisationseinheit im Dienstplan
+            angezeigt.
+
+            Momentan keine Wirkung.
+    OrganisationseinheitId:
+      type: string
+      format: uuid
+    OrganisationseinheitView:
+      type: object
+      required:
+        - id
+        - organisationseinheit
+      properties:
+        id:
+          $ref: '#/components/schemas/OrganisationseinheitId'
+        organisationseinheit:
+          $ref: '#/components/schemas/Organisationseinheit'
+    BerufsabschlussEnum:
+      type: string
+      description: >
+        Liste der Berufsabschlüsse der ambulanten Pflege nach BeVaP. 
+
+        Die hier verwendeten Kürzel entsprechen der "Codierung" des BeVaP,
+        Underscores("_") sind mit Bindestrich("-") zu ersetzen um
+
+        der Originalen Codierung des BeVaP zu entsprechen.
+
+        Beispiel: 
+
+        Die Enum-Konstante "B_APFH12_BY" entspricht der BeVaP-Codierung
+        "B-APFH12-BY", welche für 
+
+        die Ausbildung zur "Altenpflegehelfer:in - 12 Monate" für "Bayern" (BY)
+        steht.
+      enum:
+        - B_APFA24_HB
+        - B_APFH12_BB
+        - B_APFH12_BW
+        - B_APFH12_BY
+        - B_APFH12_HB
+        - B_APFH12_HE
+        - B_APFH12_NW
+        - B_APFH12_RP
+        - B_APFH12_SH
+        - B_APFH12_SL
+        - B_APFH12_TH
+        - B_APFH24_HH
+        - B_APF36_DE
+        - B_BATH36_DE
+        - B_DH12_BW
+        - B_DH12_NI
+        - B_EBPF36_DE
+        - B_ETH36_DE
+        - B_FAK_DDR
+        - B_FAKS_DDR
+        - B_FPF24_HE
+        - B_FPF24_MV
+        - B_FPF24_RP
+        - B_FPF36_BE
+        - B_FPF36_MV
+        - B_FPF36_NW
+        - B_GKIKPF36_DE
+        - B_GKPFA12_NW
+        - B_GKPFH12_BB
+        - B_GKPFH12_BE
+        - B_GKPFH12_BW
+        - B_GKPFH12_TH
+        - B_GKPFHGA24_HB
+        - B_GKPF36_DE
+        - B_GPFA24_HH
+        - B_HEBA36_DE
+        - B_HERZ36_HH
+        - B_HERZ36_SH
+        - B_HERZA24_BW
+        - B_HERZH12_BW
+        - B_HERZH12_NW
+        - B_HERZH12_ST
+        - B_HPFA24_HB
+        - B_HPFH12_BY
+        - B_HPFH24_SN
+        - B_HPF24_HB
+        - B_HPF24_MV
+        - B_HPF24_ST
+        - B_HPF36_BB
+        - B_HPF36_BE
+        - B_HPF36_BW
+        - B_HPF36_BY
+        - B_HPF36_HE
+        - B_HPF36_HH
+        - B_HPF36_NI
+        - B_HPF36_NW
+        - B_HPF36_RP
+        - B_HPF36_SH
+        - B_HPF36_SL
+        - B_HPF36_SN
+        - B_HPF36_TH
+        - B_KI36_DE
+        - B_KAPFH18_MV
+        - B_KGY24_DE
+        - B_KPFH12_DE
+        - B_KPFH12_HE
+        - B_KPFH12_NW
+        - B_KPFH12_SH
+        - B_KPFH12_SL
+        - B_KPFH12_ST
+        - B_KPFH12_SN
+        - B_K36_DE
+        - B_MFA36_DE
+        - B_MTAO36_TH
+        - B_NOT36_DE
+        - B_OTAN36_SH
+        - B_OTAS36_DE
+        - B_OTAS36_ST
+        - B_PFA23_SL
+        - B_PFA24_NI
+        - B_PFA24_SH
+        - B_PFAHF36_HH
+        - B_PFFA12_NW
+        - B_PFFHA12_BY
+        - B_PFFHK12_BY
+        - B_PA36_DE
+        - B_PS36_DE
+        - B_PFH12_ST
+        - B_PFHOQ_DE
+        - B_PHY36_DE
+        - B_RA24_DE
+        - B_SA24_BE
+        - B_SA24_HB
+        - B_SA24_HE
+        - B_SA24_MV
+        - B_SA24_NI
+        - B_SA24_NW
+        - B_SA24_RP
+        - B_SA24_SN
+        - B_SA24_ST
+    ZusatzqualifikationEnum:
+      type: string
+      description: >
+        Enthält Zusatzqualifikationen, welche allerdings hier ein ODITS-Prefix
+        haben, da diese nicht alle exakt den Codierungen des 
+
+        BfArM entsprechen können, da diese nicht eindeutig sind:
+
+        "ODITS_LFW_PO" steht für "ODITS-LFW-PO", "Landesrechtliche
+        Fachweiterbildung: Pflege in der Onkologie"
+
+        "ODITS_LFW_POP" steht für "ODITS-LFW-PO", "Landesrechtliche
+        Fachweiterbildung: Pflege im Operationsdienst"
+
+
+        Alle weiteren Codierungen entsprechen den Codierungen nach BfArM
+      enum:
+        - ODITS_LFW_IA
+        - ODITS_LFW_PIA
+        - ODITS_LFW_PN
+        - ODITS_LFW_NP
+        - ODITS_LFW_PO
+        - ODITS_LFW_POP
+        - ODITS_LFW_PS
+        - ODITS_FW_SA_SZ
+        - ODITS_LFW_PE
+        - ODITS_FW_ATMO
+        - ODITS_FW_APP
+        - ODITS_FW_SA_SV
+        - ODITS_W1
+        - ODITS_W2
+        - ODITS_W3
+        - ODITS_W4
+        - ODITS_W5
+        - ODITS_W6
+        - ODITS_W7
+        - ODITS_W8
+        - ODITS_Z_B200
+        - ODITS_Z_B120
+        - ODITS_Z_PG320
+        - ODITS_Z_VW169
+        - ODITS_Z_VW84
+        - ODITS_Z_PC160
+        - ODITS_Z_PC40
+        - ODITS_PDL
+        - ODITS_PALZ
+        - ODITS_BETRQ
+        - ODITS_Z_S
+    RechtEnum:
+      type: string
+      enum:
+        - LESEN
+        - SCHREIBEN
+        - ANLEGEN
+    BereichEnum:
+      type: string
+      enum:
+        - STARTSEITE
+        - KLIENTEN
+        - MITARBEITER
+        - AERZTE
+        - ROLLEN_UND_RECHTE
+        - ORGANISATIONSEINHEITEN
+    BereichGruppeEnum:
+      description: >
+        Enthält Gruppierungen, nach denen ein BereichEnum gruppiert sein kann.
+        Ein Bereich(Enum) gehört dabei einer 
+
+        BereichGruppe(Enum) an. Einer BereichGruppe(Enum) können beliebig viele
+        Bereich(Enums) angehören.
+      type: string
+      enum:
+        - SCHREIBTISCH
+        - STAMMBLATT
+        - MITARBEITERMAPPE
+        - DIENSTPLAN
+        - BERICHTE
+    Berechtigung:
+      type: object
+      description: >-
+        Die Berechtigung verkörpert das **Recht**, welches man für einen
+        **Bereich** besitzt
+      required:
+        - bereich
+        - recht
+      properties:
+        bereich:
+          $ref: '#/components/schemas/BereichEnum'
+        recht:
+          $ref: '#/components/schemas/RechtEnum'
+    BerechtigungList:
+      description: Eine Liste von Berechtigungen
+      type: array
+      items:
+        $ref: '#/components/schemas/Berechtigung'
+    BerechtigungGroupList:
+      description: >-
+        Enthält Listen von Berechtigungen, welche nach BereichGruppeEnum(= der
+        Key) gruppiert sind.
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/BerechtigungList'
+    Rolle:
+      type: object
+      description: Enthält die Basisdaten einer Rolle, wie Name und Kommentar.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: false
+          maxLength: 255
+          description: Name der Rolle. Mehrere gleiche Namen werden nicht unterstützt.
+        kommentar:
+          type: string
+          maxLength: 1000
+          description: Bemerkung für die Rolle.
+    RolleId:
+      type: string
+      format: uuid
+    RolleView:
+      type: object
+      description: Beschreibt eine Rolle
+      required:
+        - id
+        - rolle
+        - berechtigungen
+      properties:
+        id:
+          $ref: '#/components/schemas/RolleId'
+        rolle:
+          $ref: '#/components/schemas/Rolle'
+        berechtigungen:
+          $ref: '#/components/schemas/BerechtigungGroupList'
+    PflegedokumentKopf:
+      type: object
+      description: Enthält Properties, welche jedes Pflegedokument hat
+      required:
+        - klientReferenz
+        - status
+        - handzeichen
+        - mitarbeiterReferenz
+      properties:
+        klientReferenz:
+          $ref: '#/components/schemas/KlientReferenz'
+        status:
+          $ref: '#/components/schemas/PflegedokumentStatusEnum'
+        evaluationAm:
+          type: string
+          format: date
+          description: Termin, wann die nächste Evaluation ansteht.
+        handzeichen:
+          $ref: ./__shared-types.yaml#/Shared_Handzeichen
+        mitarbeiterReferenz:
+          $ref: '#/components/schemas/MitarbeiterReferenz'
+    PflegedokumentVerlaufsEintrag:
+      type: object
+      properties:
+        korrigiert:
+          type: boolean
+          description: >-
+            Gibt an ob dieser Satz korrigiert wurde. Ist dieses Flag ein mal
+            true, darf dieser Satz nicht mehr verändert werden -> Validierung.
+        korrekturtext:
+          type: string
+          maxLength: 200
+          description: >-
+            Dieser Text muss verfüllt werden, wenn ein Satz als Korrigiert
+            merkiert wird. Ansonsten kann dieser Text nicht verfüllt werden.
+        handzeichen:
+          type: string
+          maxLength: 5
+          readOnly: true
+          description: >-
+            Handzeichen des Mitarbeiters, der den Satz angelegt hat. Wird
+            automatisch verfüllt.
+        mitarbeiter:
+          type: string
+          format: uuid
+          readOnly: true
+          description: >-
+            Eindeutige Zuordnung zu dem Mitarbeiter, welcher diesen Satz
+            angelegt hat. Wird automatisch verfüllt.
+        istKorrekturFuer:
+          type: string
+          format: uuid
+          description: >-
+            Referenz auf einen anderen Subsatz. Damit ist dieser Datensatz dann
+            die Korrektur für einen anderen (korrigierten, also korrigiert=true)
+            Satz.
+    BlutzuckerMasseinheitEnum:
+      type: string
+      description: Blutzuckermaßeinheit als "mg/dl" oder "mmol/l"
+      enum:
+        - MG_PRO_DL
+        - MMOL_PRO_L
+    VitalwerteKopfMetaInfo:
+      type: object
+      required:
+        - id
+        - content
+      properties:
+        id:
+          $ref: '#/components/schemas/VitalwerteKopfId'
+        content:
+          $ref: '#/components/schemas/VitalwerteKopf'
+    VitalwerteKopfNeuanlage:
+      type: object
+      description: Datentyp um Kopfdaten für Vitalwerte anzulegen.
+      required:
+        - klientReferenz
+        - vitalwerteKopf
+      properties:
+        klientReferenz:
+          $ref: '#/components/schemas/KlientReferenz'
+        vitalwerteKopf:
+          $ref: '#/components/schemas/VitalwerteKopf'
+    VitalwerteKopf:
+      type: object
+      properties:
+        pflegedokumentKopfdaten:
+          $ref: '#/components/schemas/PflegedokumentKopf'
+        blutzuckerEinheit:
+          $ref: '#/components/schemas/BlutzuckerMasseinheitEnum'
+        groesse:
+          type: number
+          minimum: 0
+          maximum: 1000
+          exclusiveMaximum: true
+          description: Körpergröße in cm.
+        bemerkung:
+          type: string
+          maxLength: 200
+        bmiKorrekturwert:
+          type: number
+          minimum: 0
+          maximum: 1000
+          exclusiveMaximum: true
+          description: >
+            Gibt bei Amputationen oder fehlenden Körperteilen einen
+            BMI-Korrekturfaktor an.
+
+            Kann bei vorhandensein aller Körperteile leer bleiben!
+    VitalwerteVerlaufsEintrag:
+      type: object
+      properties:
+        pflegedokumentVerlauf:
+          $ref: '#/components/schemas/PflegedokumentVerlaufsEintrag'
+        kommentar:
+          type: string
+          maxLength: 200
+          description: Frei verfüllbar.
+        messzeitpunkt:
+          type: string
+          format: date-time
+          description: >-
+            Datum und Zeit, wann die Messung erfolgte (frei verfüllbar, darf
+            nicht in der Zukunft liegen)
+        blutdruck:
+          type: string
+          maxLength: 7
+          description: Der Blutdruck. Beispielwert "120-129".
+        puls:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          exclusiveMaximum: true
+        blutzucker:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          exclusiveMaximum: true
+        temperatur:
+          type: number
+          minimum: 1
+          maximum: 255
+        gewicht:
+          type: number
+          minimum: 1
+          maximum: 1000
+          exclusiveMaximum: true
+        bmi:
+          type: number
+          minimum: 1
+          maximum: 100
+          exclusiveMaximum: true
+          description: >-
+            soll später automatisch berechnet werden, wenn ein Gewicht
+            eingetragen wird!
+        sauerstoff:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: >-
+            Prozentwert der Sauertsoffsättigung. Dargestellt als Fließkommazahl
+            zwischen 0 und 1.
+    VitalwerteVerlaufsEintragMetaInfo:
+      type: object
+      required:
+        - id
+        - content
+      properties:
+        id:
+          $ref: '#/components/schemas/VitalwerteVerlaufId'
+        content:
+          $ref: '#/components/schemas/VitalwerteKopf'
+    VitalwerteVerlaeufe:
+      type: array
+      items:
+        $ref: '#/components/schemas/VitalwerteVerlaufsEintragMetaInfo'
+    VitalwerteKopfId:
+      type: string
+      format: uuid
+    VitalwerteVerlaufId:
+      type: string
+      format: uuid
+    KlientReferenz:
+      type: object
+      description: >-
+        Der Klient, dessen Dokument dies ist. Wird vom Frontend verfüllt -> Es
+        wird Validierungen geben müssen, welche Verhindern, dass zu viele Sätze
+        zu einem Klienten angelegt werden. Es darf immer nur einen "aktiven"
+        geben.
+      required:
+        - refKlientId
+      properties:
+        refKlientId:
+          $ref: ./__shared-types.yaml#/Shared_KlientId
+    MitarbeiterReferenz:
+      type: object
+      description: >-
+        Eindeutige Zuordnung zu dem Mitarbeiter, welcher diesen Satz angelegt
+        hat. Wird automatisch verfüllt.
+      required:
+        - refMitarbeiterId
+      properties:
+        refMitarbeiterId:
+          $ref: ./__shared-types.yaml#/Shared_MitarbeiterId
+    PflegedokumentStatusEnum:
+      type: string
+      enum:
+        - NEUANLAGE
+        - FREIGEGEBEN
+        - EVALUATION
+        - ABGESCHLOSSEN
