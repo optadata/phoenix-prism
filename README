@@ -1,0 +1,4 @@
+Zum mergen der einzelnen yaml-Dateien zu einer Datei, die dann in Swagger-Editor geladen werden kann.
+Befehl ausführen im spec verzeichnis des phoenix-api projektes. (phoenix-api/api-core/src/main/resources/specs)
+
+yaml-merge klient.spec.yaml mandant.spec.yaml organisation.spec.yaml pflegedoku.spec.yaml > api.yaml
