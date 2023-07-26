@@ -4,10 +4,10 @@
     "description": "OpenAPI specification for TestAPI",
     "license": "MIT",
     "scripts": {
-        "mock": "prism mock spec/api.yaml -h 0.0.0.0 -d",
+        "mock": "prism mock spec/api.yaml -h 0.0.0.0 -d -p 8080 --cors false",
         "build": "docker build . -t testapi-spec",
-        "start": "docker run -p 4010:4010 testapi-spec",
-        "dstart": "docker run -d -p 4010:4010 testapi-spec"
+        "start": "docker run -p 8080:8080 testapi-spec",
+        "dstart": "docker run -d -p 8080:8080 testapi-spec"
     },
     "dependencies": {
         "@openapitools/openapi-generator-cli": "^1.0.15-4.3.1",
