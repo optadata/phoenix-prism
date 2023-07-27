@@ -763,6 +763,7 @@ components:
       description: Das **Organisationseinheit**-Model
       required:
         - name
+        - anzeigeDienstplan
       properties:
         name:
           type: string
@@ -787,11 +788,11 @@ components:
       type: object
       required:
         - id
-        - organisationseinheit
+        - content
       properties:
         id:
           $ref: "#/components/schemas/OrganisationseinheitId"
-        organisationseinheit:
+        content:
           $ref: "#/components/schemas/Organisationseinheit"
 
     BerufsabschlussEnum:
@@ -963,6 +964,7 @@ components:
         - AERZTE
         - ROLLEN_UND_RECHTE
         - ORGANISATIONSEINHEITEN
+        - BERICHTEBLATT
 
     BereichGruppeEnum:
       description: |
@@ -970,11 +972,13 @@ components:
         BereichGruppe(Enum) an. Einer BereichGruppe(Enum) können beliebig viele Bereich(Enums) angehören.
       type: string
       enum:
-        - SCHREIBTISCH
-        - STAMMBLATT
-        - MITARBEITERMAPPE
-        - DIENSTPLAN
-        - BERICHTE
+        - SCHREIBTISCH,
+        - KLIENTENMAPPE_BERICHTE,
+        - KLIENTENMAPPE_ANAMNESEN,
+        - ORGANISATION_ORGANISATIONSEINHEITEN,
+        - ORGANISATION_ROLLEN_UND_RECHTE,
+        - ORGANISATION_STAMMDATEN,
+        - MITARBEITERMAPPE_MITARBEITER,
 
     Berechtigung:
       type: object
@@ -997,8 +1001,11 @@ components:
     BerechtigungGroupList:
       description: Enthält Listen von Berechtigungen, welche nach BereichGruppeEnum(= der Key) gruppiert sind.
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/BerechtigungList'
+      properties:
+        gruppenListe:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BerechtigungList'
 
     Rolle:
       type: object
@@ -1025,12 +1032,12 @@ components:
       description: Beschreibt eine Rolle
       required:
         - id
-        - rolle
+        - content
         - berechtigungen
       properties:
         id:
           $ref: "#/components/schemas/RolleId"
-        rolle:
+        content:
           $ref: "#/components/schemas/Rolle"
         berechtigungen:
           $ref: '#/components/schemas/BerechtigungGroupList'

@@ -1,0 +1,258 @@
+openapi: 3.0.3
+info:
+  title: Phoenix-Berichteblatt-API
+  description: Phoenix REST-API fuer Berichteblatt
+  version: ${berichteblatt.version}
+servers:
+  - url: 'http://localhost:8080'
+
+tags:
+  - name: Berichteblatt
+    description: Zu einem Klient gehörendes Berichteblatt.
+
+paths:
+  /api/fe/berichteblatt/{klientId}:
+    post:
+      operationId: "postCreateBerichteblatt"
+      tags:
+        - Berichteblatt
+      description: Neuanlage eines Berichteblatts
+      parameters:
+        - name: klientId
+          in: path
+          description: ID des Klienten.
+          required: true
+          schema:
+            $ref: "#/components/schemas/KlientId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Berichteblatt"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BerichteblattView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/berichteblatt/{berichteblattId}:
+    get:
+      operationId: "getBerichteblattById"
+      tags:
+        - Berichteblatt
+      description: Lesen eines Berichteblatts
+      parameters:
+        - name: berichteblattId
+          in: path
+          description: ID des Berichteblatts
+          required: true
+          schema:
+            $ref: "#/components/schemas/BerichteblattId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BerichteblattView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    put:
+      operationId: "putUpdateBerichteblatt"
+      tags:
+        - Berichteblatt
+      description: Aktualisieren eines Berichteblatts
+      parameters:
+        - name: berichteblattId
+          in: path
+          description: ID des Berichteblatts
+          required: true
+          schema:
+            $ref: "#/components/schemas/BerichteblattId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Berichteblatt"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BerichteblattView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+  /api/fe/berichteblatteintrag/{berichteblattId}:
+    post:
+      operationId: "postCreateBerichteblattEintrag"
+      tags:
+        - Berichteblatt
+      description: Neuanlage eines BerichteblattEintrags
+      parameters:
+        - name: berichteblattId
+          in: path
+          description: ID des Berichteblatts
+          required: true
+          schema:
+            $ref: "#/components/schemas/BerichteblattId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BerichteblattEintrag"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BerichteblattEintragView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+    get:
+      operationId: "getBerichteblattEintragList"
+      tags:
+        - Berichteblatt
+      description: Lesen der BerichteblattEinträge zu einem Berichteblatt
+      parameters:
+        - name: berichteblattId
+          in: path
+          description: ID des Berichteblatts
+          required: true
+          schema:
+            $ref: "#/components/schemas/BerichteblattId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BerichteblattEintragView"
+        400:
+          description: Phoenix Failure Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailureResponse"
+
+components:
+  schemas:
+    BerichteblattView:
+      type: object
+      required:
+        - id
+        - status
+        - version
+        - angelegtAm
+        - content
+      properties:
+        id:
+          $ref: "#/components/schemas/BerichteblattId"
+        status:
+          $ref: "#/components/schemas/BerichteblattStatusEnum"
+        version:
+          type: integer
+        angelegtAm:
+          type: string
+          format: date
+        letzteEvaluationAm:
+          type: string
+          format: date
+        content:
+          $ref: "#/components/schemas/Berichteblatt"
+
+    BerichteblattEintragView:
+      type: object
+      required:
+        - id
+        - berichteblattId
+        - content
+      properties:
+        id:
+          $ref: "#/components/schemas/BerichteblattEintragId"
+        berichteblattId:
+          $ref: "#/components/schemas/BerichteblattId"
+        content:
+          $ref: "#/components/schemas/BerichteblattEintrag"
+
+    BerichteblattEintragId:
+      type: string
+      format: uuid
+
+    BerichteblattStatusEnum:
+      type: string
+      enum:
+        - NEUANLAGE
+        - FREIGEGEBEN
+        - EVALUIERT
+        - ABGESCHLOSSEN
+
+    BerichteblattEintrag:
+      type: object
+      required:
+        - zeitpunkt
+        - bericht
+        - handzeichen
+      properties:
+        zeitpunkt:
+          type: string
+          format: date-time
+        bericht:
+          type: string
+          maxLength: 255
+        handzeichen:
+          $ref: "./__shared-types.yaml#/Shared_Handzeichen"
+
+    BerichteblattId:
+      type: string
+      format: uuid
+
+    Berichteblatt:
+      type: object
+      required:
+        - angelegtDurch
+      properties:
+        naechsteEvaluation:
+          type: string
+          format: date
+        angelegtDurch:
+          $ref: "./__shared-types.yaml#/Shared_Handzeichen"
+        letzteEvaluationDurch:
+          $ref: "./__shared-types.yaml#/Shared_Handzeichen"
+
+    FailureResponse:
+      $ref: "./__shared-failure-types.yaml#/FailureResponse"
+
+    KlientId:
+      $ref: "./__shared-types.yaml#/Shared_KlientId"
